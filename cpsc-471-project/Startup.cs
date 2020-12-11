@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.AspNetCore.SpaServices.ReactDevelopmentServer;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging.Debug;
 
 using cpsc_471_project.Models;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -12,6 +13,8 @@ using Microsoft.IdentityModel.Tokens;
 using System.Text;
 using Microsoft.AspNetCore.Identity;
 using cpsc_471_project.Authentication;
+using Microsoft.Extensions.Logging;
+using cpsc_471_project.Logging;
 
 namespace cpsc_471_project
 { 
@@ -28,7 +31,18 @@ namespace cpsc_471_project
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<JobHunterDBContext>(opt => opt.UseSqlite(DBLocation));
+            services.AddDbContext<JobHunterDBContext>(opt =>
+            {
+                ILoggerFactory factory = LoggerFactory.Create(builder =>
+                {
+                    
+                });
+
+                factory.AddProvider(new SqlLoggerProvider(new SqlLogger()));
+
+                opt.UseLoggerFactory(factory)
+                    .UseSqlite(DBLocation);
+            });
             services.AddControllers();
 
             // For Identity
