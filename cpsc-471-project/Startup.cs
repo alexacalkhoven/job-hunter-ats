@@ -22,10 +22,12 @@ namespace cpsc_471_project
     {
         public const string DBLocation = "Data Source=..\\JobHunterDB.sqlite";
         public IConfiguration Configuration { get; }
+        public ILoggerProvider loggerFactory;
 
         public Startup(IConfiguration configuration)
         {
             Configuration = configuration;
+            loggerFactory = new SqlLoggerProvider(new SqlLogger());
         }
 
         // This method gets called by the runtime. Use this method to add services to the container.
@@ -38,7 +40,7 @@ namespace cpsc_471_project
                     
                 });
 
-                factory.AddProvider(new SqlLoggerProvider(new SqlLogger()));
+                factory.AddProvider(loggerFactory);
 
                 opt.UseLoggerFactory(factory)
                     .UseSqlite(DBLocation);

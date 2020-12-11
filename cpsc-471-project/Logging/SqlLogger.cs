@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -9,6 +10,21 @@ namespace cpsc_471_project.Logging
 {
     public class SqlLogger : ILogger
     {
+        private const string PATH = @"..\logs\sql_log.txt";
+
+        public SqlLogger()
+        {
+            if (!Directory.Exists(@"..\logs"))
+            {
+                Directory.CreateDirectory(@"..\logs");
+            }
+        }
+
+        ~SqlLogger()
+        {
+            
+        }
+
         public IDisposable BeginScope<TState>(TState state)
         {
             return default;
@@ -44,6 +60,13 @@ namespace cpsc_471_project.Logging
                     Console.WriteLine(sql);
 
                     Console.WriteLine();
+
+                    using (StreamWriter sw = File.AppendText(PATH))
+                    {
+                        sw.WriteLine(match.Value);
+                        sw.WriteLine(sql);
+                        sw.WriteLine();
+                    }
                 }
             }
         }
